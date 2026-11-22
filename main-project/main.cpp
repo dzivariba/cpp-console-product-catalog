@@ -3,15 +3,18 @@
 #include "product.h"
 #include "file_reader.h"
 #include "constants.h"
+#include <windows.h>
 
 using namespace std;
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-    cout << "Laboratory work #1. GIT\n";
-    cout << "Variant #10. Product catalog\n";
-    cout << "Author: Имя Фамилия\n\n";
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    cout << "Лабораторная работа 8 GIT\n";
+    cout << "Вариант 10 \n";
+    cout << "Автор: Пашкевич Иван\n";
+    cout << "Группа: 26Пинж\n";
 
     product* products[MAX_FILE_ROWS_COUNT];
     int size;
@@ -36,5 +39,8 @@ int main()
     {
         cout << error << '\n';
     }
+
+   
+
     return 0;
 }
