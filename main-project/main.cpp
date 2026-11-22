@@ -4,9 +4,13 @@
 #include "product.h"
 #include "file_reader.h"
 #include "filter.h"
+#include "sort.h"
 #include "constants.h"
 
 using namespace std;
+
+typedef int (*compare_func)(product*, product*);
+typedef void (*sort_func)(product* [], int, compare_func);
 
 void output(product* item)
 {
@@ -38,38 +42,76 @@ int main()
             output(products[i]);
         }
 
-        bool (*check_function)(product*) = nullptr;
-        cout << "\nВыберите критерий фильтрации:\n";
+        cout << "\nВыберите действие:\n";
         cout << "1) Вывести все товары в категории «Промтовары»\n";
         cout << "2) Вывести все товары стоимостью выше 100 рублей\n";
+        cout << "3) Отсортировать товары\n";
         cout << "Ваш выбор: ";
         int item;
         cin >> item;
         cout << '\n';
 
-        switch (item)
+        if (item == 1 || item == 2)
         {
-        case 1:
-            check_function = check_product_by_category;
-            cout << "***** Товары в категории «Промтовары» *****\n\n";
-            break;
-        case 2:
-            check_function = check_product_by_price;
-            cout << "***** Товары стоимостью выше 100 рублей *****\n\n";
-            break;
-        default:
-            throw "Некорректный номер пункта меню";
-        }
+            bool (*check_functions[])(product*) = {
+                check_product_by_category,
+                check_product_by_price
+            };
 
-        if (check_function)
-        {
             int new_size;
-            product** filtered = filter(products, size, check_function, new_size);
+            product** filtered = filter(products, size, check_functions[item - 1], new_size);
+            cout << "***** Результат фильтрации *****\n\n";
             for (int i = 0; i < new_size; i++)
             {
                 output(filtered[i]);
             }
             delete[] filtered;
+        }
+        else if (item == 3)
+        {
+            sort_func sort_methods[] = {
+                selection_sort,
+                merge_sort
+            };
+            compare_func compare_criteria[] = {
+                compare_by_quantity_desc,
+                compare_by_category_asc_price_desc
+            };
+
+            cout << "Выберите метод сортировки:\n";
+            cout << "1) Сортировка выбором (Selection sort)\n";
+            cout << "2) Сортировка слиянием (Merge sort)\n";
+            cout << "Ваш выбор: ";
+            int sort_choice;
+            cin >> sort_choice;
+
+            cout << "\nВыберите критерий сортировки:\n";
+            cout << "1) По убыванию количества товара на складе\n";
+            cout << "2) По возрастанию категории, а внутри категории — по убыванию стоимости\n";
+            cout << "Ваш выбор: ";
+            int criteria_choice;
+            cin >> criteria_choice;
+            cout << '\n';
+
+            if (sort_choice < 1 || sort_choice > 2 || criteria_choice < 1 || criteria_choice > 2)
+            {
+                throw "Некорректный выбор метода или критерия сортировки";
+            }
+
+            sort_func selected_sort = sort_methods[sort_choice - 1];
+            compare_func selected_compare = compare_criteria[criteria_choice - 1];
+
+            selected_sort(products, size, selected_compare);
+
+            cout << "***** Отсортированный каталог товаров *****\n\n";
+            for (int i = 0; i < size; i++)
+            {
+                output(products[i]);
+            }
+        }
+        else
+        {
+            throw "Некорректный номер пункта меню";
         }
 
         for (int i = 0; i < size; i++)
