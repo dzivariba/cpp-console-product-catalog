@@ -6,6 +6,7 @@
 #include "filter.h"
 #include "sort.h"
 #include "constants.h"
+#include "processing.h"
 
 using namespace std;
 
@@ -46,6 +47,7 @@ int main()
         cout << "1) Вывести все товары в категории «Промтовары»\n";
         cout << "2) Вывести все товары стоимостью выше 100 рублей\n";
         cout << "3) Отсортировать товары\n";
+        cout << "4) Найти общую стоимость всех товаров в указанной категории\n";
         cout << "Ваш выбор: ";
         int item;
         cin >> item;
@@ -108,6 +110,15 @@ int main()
             {
                 output(products[i]);
             }
+        }
+        else if (item == 4)
+        {
+            char target_category[MAX_STRING_SIZE];
+            cout << "Введите категорию товара: ";
+            cin >> target_category;
+            double total = process(products, size, target_category);
+            cout << "\nОбщая стоимость товаров в категории «" << target_category << "»: "
+                << fixed << setprecision(2) << total << " руб.\n";
         }
         else
         {
